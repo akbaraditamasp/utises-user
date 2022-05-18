@@ -16,4 +16,6 @@ const TextField = forwardRef(({ className, message, label, ...props }, ref) => {
   );
 });
 
+TextField.displayName = "TextField";
+
 export default TextField;

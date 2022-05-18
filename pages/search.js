@@ -46,7 +46,7 @@ export default function Search({ q = "", data }) {
   return (
     <Fragment>
       <Head>
-        <title>Hasil Pencarian "{q}"</title>
+        <title>Hasil Pencarian &quot;{q}&quot;</title>
       </Head>
       <Heading>
         <form
@@ -89,7 +89,7 @@ export default function Search({ q = "", data }) {
             </div>
           ) : (
             <div className="py-5 text-center">
-              Tidak ditemukan produk dengan keyword "{q}"
+              Tidak ditemukan produk dengan keyword &quot;{q}&quot;
             </div>
           )}
         </Container>
