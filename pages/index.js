@@ -43,6 +43,13 @@ export default function Home({ latestProduct = [] }) {
     <Fragment>
       <Head>
         <title>Utises</title>
+        <meta property="og:title" content="Utises" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={process.env.NEXT_PUBLIC_APP_URL} />
+        <meta
+          property="og:image"
+          content={process.env.NEXT_PUBLIC_APP_URL + "logo.png"}
+        />
       </Head>
       <div className="h-screen bg-primary-tint flex justify-center relative overflow-hidden -mt-12 lg:-mt-16">
         <Cloud className="absolute top-auto lg:top-0 bottom-0 lg:bottom-auto left-0 w-auto lg:w-full text-primary-background" />

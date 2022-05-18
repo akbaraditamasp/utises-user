@@ -41,11 +41,12 @@ export const getServerSideProps = async (ctx) => {
     props: {
       categories: await getCategories(),
       data,
+      slug: ctx.query.slug,
     },
   };
 };
 
-export default function DetailProduct({ data = {} }) {
+export default function DetailProduct({ data = {}, slug }) {
   const [imageFocus, setImageFocus] = useState(0);
   const [loading, setLoading] = useState(false);
   const auth = useSelector((state) => state.auth);
@@ -98,6 +99,15 @@ export default function DetailProduct({ data = {} }) {
     <Fragment>
       <Head>
         <title>{data.name}</title>
+        <meta property="og:title" content={data.name} />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:url"
+          content={process.env.NEXT_PUBLIC_APP_URL + slug}
+        />
+        {data.images[0]?.url && (
+          <meta property="og:image" content={data.images[0]?.url} />
+        )}
       </Head>
       <div className="flex justify-center">
         <Container className="w-full md:w-640 lg:w-768 xl:w-1024 2xl:w-1280 flex flex-col lg:flex-row p-5 lg:p-8 my-3 lg:my-6">
