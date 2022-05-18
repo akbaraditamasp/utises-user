@@ -151,6 +151,7 @@ export default function InvDetail({ inv, data }) {
             {!data.is_paid ? (
               <a
                 target="_blank"
+                rel="noreferrer"
                 href={data.payment_link}
                 className="bg-primary-base text-white py-3 px-8 text-center ml-5"
                 title="Lanjutkan Pembayaran"
