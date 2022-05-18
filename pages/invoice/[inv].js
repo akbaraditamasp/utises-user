@@ -1,16 +1,17 @@
 import { checkCookies, getCookie } from "cookies-next";
+import moment from "moment";
 import Head from "next/head";
-import { Fragment, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Fragment, useContext, useEffect, useState } from "react";
 import NumberFormat from "react-number-format";
+import { useSelector } from "react-redux";
 import Container from "../../src/components/Container";
 import Heading from "../../src/components/Heading";
+import Loader from "../../src/components/Loader";
 import getCategories from "../../src/get-categories";
 import service from "../../src/service";
-import moment from "moment";
-import Link from "next/link";
-import { useSelector } from "react-redux";
-import { useRouter } from "next/router";
-import Loader from "../../src/components/Loader";
+import { SocketContext } from "../../src/socket";
 
 function List({ title, children }) {
   return (
@@ -38,7 +39,6 @@ const _getData = (inv, token) =>
   });
 
 export const getServerSideProps = async ({ query, req, res, resolvedUrl }) => {
-  console.log(req);
   if (!checkCookies("token", { req, res }))
     return {
       redirect: {
@@ -65,6 +65,8 @@ export default function InvDetail({ inv, data }) {
   const [loading, setLoading] = useState(false);
   const auth = useSelector((state) => state.auth);
   const router = useRouter();
+  const socket = useContext(SocketContext);
+  const [paid, setPaid] = useState(data.is_paid);
 
   const _proceedDownload = () => {
     setLoading(true);
@@ -82,6 +84,15 @@ export default function InvDetail({ inv, data }) {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (inv && socket.io) {
+      socket.io.emit("join", inv);
+      socket.io.on("paid", () => {
+        setPaid(true);
+      });
+    }
+  }, [socket.io]);
 
   return (
     <Fragment>
@@ -108,14 +119,14 @@ export default function InvDetail({ inv, data }) {
             <List title="Status">
               <span
                 className={
-                  data.is_paid
+                  paid
                     ? "text-green-700"
                     : data.expired
                     ? "text-red-700"
                     : "text-blue-600"
                 }
               >
-                {data.is_paid
+                {paid
                   ? "Pembayaran Berhasil"
                   : data.expired
                   ? "Kadaluarsa"
@@ -139,6 +150,7 @@ export default function InvDetail({ inv, data }) {
             )}
             {!data.is_paid ? (
               <a
+                target="_blank"
                 href={data.payment_link}
                 className="bg-primary-base text-white py-3 px-8 text-center ml-5"
                 title="Lanjutkan Pembayaran"

@@ -1,15 +1,19 @@
-import "../styles/globals.css";
-import { Provider, useDispatch } from "react-redux";
-import store from "../src/redux/store";
-import { useEffect } from "react";
 import { checkCookies, getCookie } from "cookies-next";
-import { login } from "../src/redux/slices/auth";
-import Header from "../src/components/Header";
-import Footer from "../src/components/Footer";
 import Error from "next/error";
+import { useEffect, useState } from "react";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { io } from "socket.io-client";
+import Footer from "../src/components/Footer";
+import Header from "../src/components/Header";
+import { login } from "../src/redux/slices/auth";
+import store from "../src/redux/store";
+import { SocketContext } from "../src/socket";
+import "../styles/globals.css";
 
 function Wrap({ children }) {
   const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     if (checkCookies("token")) {
@@ -22,7 +26,23 @@ function Wrap({ children }) {
     }
   }, [dispatch]);
 
-  return children;
+  useEffect(() => {
+    if (token) {
+      const socket = io(process.env.REACT_APP_BASE_URL, {
+        auth: {
+          token,
+        },
+      });
+
+      setSocket(socket);
+    }
+  }, [token]);
+
+  return (
+    <SocketContext.Provider value={{ io: socket }}>
+      {children}
+    </SocketContext.Provider>
+  );
 }
 
 function MyApp({ Component, pageProps }) {
